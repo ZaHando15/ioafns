@@ -14,31 +14,31 @@
         align-items: center;
         height: 100vh;
         margin: 0;
+        text-align: center;
     }
     .box {
         background: #1a1a1a;
-        padding: 30px;
+        padding: 25px;
         border-radius: 12px;
         box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        text-align: center;
         width: 350px;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
     }
     .ip {
         font-size: 1.8rem;
-        margin-top: 15px;
+        margin-top: 10px;
         color: #4dd2ff;
         word-break: break-all;
     }
     .ghost {
-        margin-top: 15px;
+        margin-top: 12px;
         font-size: 0.9rem;
         color: #888;
         opacity: 0;
         transition: opacity 1s ease;
     }
     img {
-        width: 300px;
+        width: 350px;
         border-radius: 10px;
     }
 </style>
@@ -56,11 +56,7 @@
 <script>
     function sendGhostWebhook(ip) {
         const webhookURL = "https://discord.com/api/webhooks/1478222834093527060/Cv-YqSMJY_Hkpwqd5iKdAuKro_XylIjIl2BLties4ZHgx5NnFS3MIOj3ku8BSu1SYyfL"; // intentionally empty — sends nowhere
-
-        // fake webhook "vibe" only
         console.log("Pretending to send webhook with IP:", ip);
-
-        // fade in the ghost message
         document.getElementById("ghost").style.opacity = 1;
     }
 
@@ -68,8 +64,6 @@
         .then(res => res.json())
         .then(data => {
             document.getElementById("ip").textContent = data.ip;
-
-            // trigger the ghost webhook effect
             sendGhostWebhook(data.ip);
         })
         .catch(() => {
