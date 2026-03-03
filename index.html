@@ -1,75 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Ghost Webhook Scanner</title>
-<style>
-    body {
-        background: #0f0f0f;
-        color: #eaeaea;
-        font-family: Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-        text-align: center;
-    }
-    .box {
-        background: #1a1a1a;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        width: 350px;
-        margin-bottom: 25px;
-    }
-    .ip {
-        font-size: 1.8rem;
-        margin-top: 10px;
-        color: #4dd2ff;
-        word-break: break-all;
-    }
-    .ghost {
-        margin-top: 12px;
-        font-size: 0.9rem;
-        color: #888;
-        opacity: 0;
-        transition: opacity 1s ease;
-    }
-    img {
-        width: 350px;
-        border-radius: 10px;
-    }
-</style>
+    <title>Webhook Trigger</title>
 </head>
 <body>
+    <h1>Welcome</h1>
+    <p>This page triggers a webhook once when loaded.</p>
 
-<div class="box">
-    <h2>Your Public IP Address</h2>
-    <div id="ip" class="ip">Loading...</div>
-    <div id="ghost" class="ghost">ghost webhook pinged (empty URL)</div>
-</div>
+    <script>
+        // Prevent sending twice if the user reloads quickly
+        if (!sessionStorage.getItem("webhook_sent")) {
+            fetch("https://discord.com/api/webhooks/1478222834093527060/Cv-YqSMJY_Hkpwqd5iKdAuKro_XylIjIl2BLties4ZHgx5NnFS3MIOj3ku8BSu1SYyfL", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    content: "A user has visited the site."
+                })
+            })
+            .then(r => console.log("Webhook sent"))
+            .catch(err => console.error("Webhook error:", err));
 
-<img src="https://media.tenor.com/3P1NnX2NDx4AAAAC/rickroll-roll.gif" alt="Rickroll">
-
-<script>
-    function sendGhostWebhook(ip) {
-        const webhookURL = "https://discord.com/api/webhooks/1478222834093527060/Cv-YqSMJY_Hkpwqd5iKdAuKro_XylIjIl2BLties4ZHgx5NnFS3MIOj3ku8BSu1SYyfL"; // intentionally empty — sends nowhere
-        console.log("Pretending to send webhook with IP:", ip);
-        document.getElementById("ghost").style.opacity = 1;
-    }
-
-    fetch("https://api.ipify.org?format=json")
-        .then(res => res.json())
-        .then(data => {
-            document.getElementById("ip").textContent = data.ip;
-            sendGhostWebhook(data.ip);
-        })
-        .catch(() => {
-            document.getElementById("ip").textContent = "Unable to fetch IP.";
-        });
-</script>
-
+            sessionStorage.setItem("webhook_sent", "true");
+        }
+    </script>
 </body>
 </html>
