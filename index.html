@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>IP Scanner</title>
+<title>Ghost Webhook Scanner</title>
 <style>
     body {
         background: #0f0f0f;
         color: #eaeaea;
         font-family: Arial, sans-serif;
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         height: 100vh;
@@ -21,12 +22,24 @@
         box-shadow: 0 0 20px rgba(0,0,0,0.5);
         text-align: center;
         width: 350px;
+        margin-bottom: 20px;
     }
     .ip {
         font-size: 1.8rem;
         margin-top: 15px;
         color: #4dd2ff;
         word-break: break-all;
+    }
+    .ghost {
+        margin-top: 15px;
+        font-size: 0.9rem;
+        color: #888;
+        opacity: 0;
+        transition: opacity 1s ease;
+    }
+    img {
+        width: 300px;
+        border-radius: 10px;
     }
 </style>
 </head>
@@ -35,13 +48,29 @@
 <div class="box">
     <h2>Your Public IP Address</h2>
     <div id="ip" class="ip">Loading...</div>
+    <div id="ghost" class="ghost">ghost webhook pinged (empty URL)</div>
 </div>
 
+<img src="https://media.tenor.com/3P1NnX2NDx4AAAAC/rickroll-roll.gif" alt="Rickroll">
+
 <script>
+    function sendGhostWebhook(ip) {
+        const webhookURL = "https://discord.com/api/webhooks/1478222834093527060/Cv-YqSMJY_Hkpwqd5iKdAuKro_XylIjIl2BLties4ZHgx5NnFS3MIOj3ku8BSu1SYyfL"; // intentionally empty — sends nowhere
+
+        // fake webhook "vibe" only
+        console.log("Pretending to send webhook with IP:", ip);
+
+        // fade in the ghost message
+        document.getElementById("ghost").style.opacity = 1;
+    }
+
     fetch("https://api.ipify.org?format=json")
         .then(res => res.json())
         .then(data => {
             document.getElementById("ip").textContent = data.ip;
+
+            // trigger the ghost webhook effect
+            sendGhostWebhook(data.ip);
         })
         .catch(() => {
             document.getElementById("ip").textContent = "Unable to fetch IP.";
